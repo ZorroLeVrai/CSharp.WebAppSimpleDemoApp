@@ -1,6 +1,7 @@
 using TaskManagerWebApp.Services;
 using System.Text.Json.Serialization;
 using Serilog;
+using TaskManagerWebApp.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+// Ajout du middleware de log des requêtes
+app.UseMiddleware<LogRequestMiddleware>();
 
 app.MapControllers();
 

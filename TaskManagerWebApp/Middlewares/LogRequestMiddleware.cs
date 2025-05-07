@@ -1,4 +1,4 @@
-﻿namespace WebAppDemo.Middlewares;
+﻿namespace TaskManagerWebApp.Middlewares;
 
 public class LogRequestMiddleware
 {
@@ -15,9 +15,9 @@ public class LogRequestMiddleware
     {
         _logger.LogInformation($"Request: {context.Request.Method} {context.Request.Path}");
 
-        //Appel du middleware suivant
+        // Appel du prochain middleware dans le pipeline
         await _next(context);
 
-        _logger.LogInformation($"Status: {context.Response.StatusCode}");
+        _logger.LogInformation($"Response: {context.Response.StatusCode}");
     }
 }
