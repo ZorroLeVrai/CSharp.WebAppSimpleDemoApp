@@ -54,6 +54,14 @@ public class TaskController : ControllerBase
 
         _logger.LogInformation("Ajout d'une nouvelle tâche {Task}", value);
         var newTask = _taskService.AddTask(value.Title, value.Status, value.DueDate);
+
+        if (newTask == null)
+        {
+            _logger.LogWarning("Impossible d'ajouter la tâche {Task} : limite atteinte", value);
+            return BadRequest("Task limit reached.");
+        }
+
+        _logger.LogInformation("Tâche ajoutée avec succès {Task}", newTask);
         return CreatedAtAction(nameof(Get), new { id = newTask.Id }, newTask);
     }
 

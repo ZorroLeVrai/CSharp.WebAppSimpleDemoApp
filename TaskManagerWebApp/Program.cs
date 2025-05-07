@@ -2,6 +2,7 @@ using TaskManagerWebApp.Services;
 using System.Text.Json.Serialization;
 using Serilog;
 using TaskManagerWebApp.Middlewares;
+using TaskManagerWebApp.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,9 @@ Log.Logger = new LoggerConfiguration()
 
 // Utilisation de Serilog. Remplace le système de log par défaut
 builder.Host.UseSerilog();
+
+// Lecture de la section TacheConfig
+builder.Services.Configure<TacheConfig>(builder.Configuration.GetSection("TacheConfig"));
 
 // Add services to the container.
 
