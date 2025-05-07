@@ -14,4 +14,9 @@ public class TaskItem
         Status = status;
         DueDate = dueDate;
     }
+
+    public override string ToString()
+    {
+        return $"[TaskItem: {Id}, Title: {Title}, Status: {Status}, DueDate: {DueDate}]";
+    }
 }

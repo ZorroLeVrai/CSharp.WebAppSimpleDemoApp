@@ -1,7 +1,16 @@
 using TaskManagerWebApp.Services;
 using System.Text.Json.Serialization;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Lis la config depuis appsettings.json
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+// Utilisation de Serilog. Remplace le système de log par défaut
+builder.Host.UseSerilog();
 
 // Add services to the container.
 

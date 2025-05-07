@@ -87,6 +87,9 @@ _TeamCity*
 *.ncrunch*
 .*crunch*.local.xml
 
+#Log folder
+logs/
+
 # Installshield output folder
 [Ee]xpress/
 
