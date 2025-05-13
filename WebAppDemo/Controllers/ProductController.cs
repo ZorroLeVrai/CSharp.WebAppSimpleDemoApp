@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebAppDemo.Models;
 using WebAppDemo.Services;
 
@@ -6,6 +8,7 @@ using WebAppDemo.Services;
 
 namespace WebAppDemo.Controllers;
 
+[Authorize]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
 [ApiVersion("1.0")]

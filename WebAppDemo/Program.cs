@@ -1,9 +1,11 @@
-using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using WebAppDemo.Configuration;
 using WebAppDemo.Middlewares;
 using WebAppDemo.Services;
+using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,12 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 
 // Add services to the container.
 
+// Add User Secrets in development
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+
 // Versioning de l'API
 builder.Services.AddApiVersioning(options =>
 {
@@ -29,12 +37,56 @@ builder.Services.AddApiVersioning(options =>
 
     // Choisir la méthode de versioning (ex : URL)
     options.ApiVersionReader = new UrlSegmentApiVersionReader(); // version dans l’URL
+}).AddMvc();
+
+// Access JWT configuration
+JwtConfig? jwtConfig = builder.Configuration.GetSection("JwtConfig").Get<JwtConfig>();
+if (jwtConfig == null)
+{
+    throw new Exception("JWT configuration is missing");
+}
+// Access JWT configuration from user secrets
+UserConfig? userConfig = builder.Configuration.GetSection("UserConfig").Get<UserConfig>();
+if (userConfig == null)
+{
+    throw new Exception("User configuration is missing");
+}
+
+// Register JWT configuration as a singleton
+builder.Services.AddSingleton(jwtConfig);
+
+// Register User configuration as a singleton
+builder.Services.AddSingleton(userConfig);
+
+// Add services to the container
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtConfig.Issuer,
+        ValidAudience = jwtConfig.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Secret))
+    };
 });
+
+builder.Services.AddAuthorization();
 
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddSingleton<IUserService, UserService>();
 
 // Enregistrement du service de configuration
 builder.Services.AddSingleton<IMyConfigurationService, MyConfigurationService>();
@@ -59,6 +111,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<LogRequestMiddleware>();
