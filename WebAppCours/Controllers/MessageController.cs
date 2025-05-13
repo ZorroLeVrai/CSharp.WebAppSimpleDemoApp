@@ -1,0 +1,56 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using WebAppCours.Models;
+using WebAppCours.Services;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+namespace WebAppCours.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class MessageController : ControllerBase
+{
+    private readonly IMessageService _messageService;
+
+    public MessageController(IMessageService messageService)
+    {
+        _messageService = messageService;
+    }
+
+    // GET: api/<MessageController>
+    [HttpGet]
+    public IEnumerable<Message> Get()
+    {
+        return _messageService.GetAll();
+    }
+
+    // GET api/<MessageController>/5
+    [HttpGet("{id}")]
+    public Message? Get(int id)
+    {
+        return _messageService.GetById(id);
+    }
+
+    // POST api/<MessageController>
+    [HttpPost]
+    public void Post([FromBody] string value)
+    {
+        var msg = new Message(value, _messageService.GetAll().Count());
+        _messageService.Add(msg);
+    }
+
+    // PUT api/<MessageController>/5
+    [HttpPut("{id}")]
+    public void Put(int id, [FromBody] string value)
+    {
+        var msg = new Message(value, id);
+        _messageService.Update(id, msg);
+    }
+
+    // DELETE api/<MessageController>/5
+    [HttpDelete("{id}")]
+    public void Delete(int id)
+    {
+        _messageService.Remove(id);
+    }
+}
