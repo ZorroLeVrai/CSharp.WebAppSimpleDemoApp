@@ -43,7 +43,7 @@ public class MessageController : ControllerBase
     [HttpPost]
     public void Post([FromBody] string value)
     {
-        var msg = new Message(value, _messageService.GetAll().Count());
+        var msg = new Message(value, 1);
         _messageService.Add(msg);
     }
 

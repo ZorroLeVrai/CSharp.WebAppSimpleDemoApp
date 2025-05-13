@@ -10,9 +10,18 @@ public class MessageService : IMessageService
         { 1, new Message("Hello World 2", 1) }
     };
 
+    private int currentMessageId = 1;
+
+    private int GetNextMessageId()
+    {
+        return ++currentMessageId;
+    }
+
     public void Add(Message msg)
     {
-        _messages.Add(msg.Id, msg);
+        var messageId = GetNextMessageId();
+        msg.Id = messageId;
+        _messages.Add(messageId, msg);
     }
 
     public IEnumerable<Message> GetAll()
