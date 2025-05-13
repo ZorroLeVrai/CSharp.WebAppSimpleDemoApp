@@ -19,16 +19,24 @@ public class MessageController : ControllerBase
 
     // GET: api/<MessageController>
     [HttpGet]
-    public IEnumerable<Message> Get()
+    public ActionResult<IEnumerable<Message>> Get()
     {
-        return _messageService.GetAll();
+        return Ok(_messageService.GetAll());
     }
 
     // GET api/<MessageController>/5
     [HttpGet("{id}")]
-    public Message? Get(int id)
+    async public Task<ActionResult<Message>> Get(int id)
     {
-        return _messageService.GetById(id);
+        var message = _messageService.GetById(id);
+
+        await Task.Delay(1000);
+        if (message == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(message);
     }
 
     // POST api/<MessageController>
@@ -49,8 +57,10 @@ public class MessageController : ControllerBase
 
     // DELETE api/<MessageController>/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    public IActionResult Delete(int id)
     {
         _messageService.Remove(id);
+
+        return Ok();
     }
 }
