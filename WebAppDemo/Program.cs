@@ -6,6 +6,9 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using WebAppDemo.Swagger;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +39,9 @@ builder.Services.AddApiVersioning(options =>
     options.ReportApiVersions = true;
 
     // Choisir la méthode de versioning (ex : URL)
-    options.ApiVersionReader = new UrlSegmentApiVersionReader(); // version dans l’URL
+    options.ApiVersionReader = ApiVersionReader.Combine(
+           new HeaderApiVersionReader("ApiVersion"),
+           new UrlSegmentApiVersionReader()); ; // version dans l’URL
 }).AddMvc();
 
 // Access JWT configuration
@@ -85,6 +90,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
 builder.Services.AddSingleton<IUserService, UserService>();
 

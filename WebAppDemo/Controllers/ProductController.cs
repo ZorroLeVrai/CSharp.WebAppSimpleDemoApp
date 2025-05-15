@@ -9,7 +9,8 @@ using WebAppDemo.Services;
 namespace WebAppDemo.Controllers;
 
 [Authorize]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/[controller]")]
+[Route("api/v{version:apiversion}/[controller]")]
 [ApiController]
 [ApiVersion("1.0")]
 [ApiVersion("2.0")]

@@ -13,9 +13,10 @@ server.Start(socket =>
     };
 
     socket.OnClose = () => Console.WriteLine("Connection Closed");
+
     socket.OnMessage = message =>
     {
-        //Console.WriteLine($"Received: {message}");
+        Console.WriteLine($"Received: {message}");
         //socket.Send($"Echo: {message}");
 
         foreach (var wsConnection in wsConnections)
