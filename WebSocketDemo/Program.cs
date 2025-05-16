@@ -1,31 +1,35 @@
 using Fleck;
 
-var server = new WebSocketServer("ws://0.0.0.0:8181");
 
+var server = new WebSocketServer("ws://0.0.0.0:8181");
 var wsConnections = new List<IWebSocketConnection>();
+
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+//Accessing the default logger
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
 server.Start(socket =>
 {
     socket.OnOpen = () =>
     {
-        Console.WriteLine("Connection Opened");
+        logger.LogInformation("Connection Opened");
         wsConnections.Add(socket);
     };
 
-    socket.OnClose = () => Console.WriteLine("Connection Closed");
+    socket.OnClose = () => logger.LogInformation("Connection Closed");
 
     socket.OnMessage = message =>
     {
-        Console.WriteLine($"Received: {message}");
+        logger.LogInformation($"Received: {message}");
         //socket.Send($"Echo: {message}");
 
         foreach (var wsConnection in wsConnections)
         {
-            wsConnection.Send($"Echo: {message}");
+            wsConnection.Send($"{message}");
         }
     };
 });
 
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
 app.Run();
